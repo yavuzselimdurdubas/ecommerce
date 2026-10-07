@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController 
-@RequestMapping ("/api")
+@RequestMapping ("/api/products")
 public class ProductController {
 private final ProductService productService;
 
@@ -18,22 +18,22 @@ private final ProductService productService;
         this.productService = productService;
     }
 
-    @PostMapping("/products")
+    @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
     }
 
-    @GetMapping("/products/{id}")    
+    @GetMapping("/{id}")    
     public Product getProductById(@PathVariable Long id) {
         return productService.getProductById(id);    
     }
 
-    @DeleteMapping ("/products/{id}")
+    @DeleteMapping ("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
 
-    @PatchMapping ("/products/{id}")
+    @PatchMapping ("/{id}")
     public Product updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {  
         return productService.updateProduct(id, updatedProduct);
     }
