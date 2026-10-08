@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Data
@@ -16,6 +17,6 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToMany(mappedBy = "cart")
-    private List<CartItem> items;
+    private List<CartItem> items = new ArrayList<>();
     
 }
