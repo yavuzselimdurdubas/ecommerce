@@ -34,6 +34,9 @@ private final CartItemRepository cartItemRepository;
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
         cart.getItems().add(cartItem);
+
+        cart.setTotalPrice(cart.getTotalPrice() + (product.getPrice() * cartItem.getQuantity()));
+        cartRepository.save(cart);
         return cart;
     }
 }

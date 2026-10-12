@@ -18,5 +18,6 @@ public class Cart {
     private Long id;
     @OneToMany(mappedBy = "cart")
     private List<CartItem> items = new ArrayList<>();
+    private double totalPrice = 0.0;
     
 }
