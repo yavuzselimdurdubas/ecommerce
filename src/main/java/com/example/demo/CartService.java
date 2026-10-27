@@ -3,6 +3,7 @@ package com.example.demo;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
 
 @Service   
 @RequiredArgsConstructor 
@@ -36,6 +37,7 @@ private final CartItemRepository cartItemRepository;
     
     if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            cartItemRepository.save(existingItem);
         } else {
             CartItem newItem = new CartItem();
             newItem.setProduct(product);
@@ -58,6 +60,23 @@ private final CartItemRepository cartItemRepository;
         cart.getItems().remove(cartItem);
         cart.setTotalPrice(cart.getTotalPrice() - (cartItem.getProduct().getPrice() * cartItem.getQuantity()));
         cartItemRepository.delete(cartItem);
+        cartRepository.save(cart);
+        return cart;
+    }
+
+    public Cart checkoutCart(Long cartId) {
+        Cart cart = getCartById(cartId);
+        for (CartItem item : cart.getItems()) {
+            Product product = item.getProduct();
+            if (product.getStock() < item.getQuantity()) {
+                throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
+            }
+            product.setStock(product.getStock() - item.getQuantity());
+            productRepository.save(product);
+        }
+        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
+        cart.setTotalPrice(0.0);
         cartRepository.save(cart);
         return cart;
     }

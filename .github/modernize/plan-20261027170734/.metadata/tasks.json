@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-version",
+      "description": "Upgrade Java Version",
+      "reason": "The assessment reports that the application is not using the latest LTS Java version.",
+      "requirements": "Upgrade the application from Java 17 to Java 25 LTS. Retain the current Spring Boot and application functionality; this task does not request a framework upgrade. Addresses issues: Java Version is not the latest LTS.",
+      "kbId": "java-version-upgrade",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-jakarta-jpa-to-azure",
+      "description": "Migrate Jakarta JPA to Azure",
+      "reason": "The assessment detects Jakarta Persistence APIs in the application, which need to be considered for Azure readiness.",
+      "requirements": "Address the detected Jakarta Persistence (JPA) usage and prepare the existing persistence layer for an Azure-hosted relational database while preserving application persistence behavior. The specific Azure database service and any data-migration scope were not specified; do not select a target service or assume data conversion. Addresses issues: Detects usage of Jakarta Persistence (JPA) APIs.",
+      "dependencies": [
+        "001-upgrade-java-version"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "containerization",
+      "id": "003-containerize-java-application",
+      "description": "Containerize Java Application for Container Readiness",
+      "reason": "The assessment reports that no Dockerfile is present, preventing container-based replatforming.",
+      "requirements": "Make the Java application container-ready without adding an Azure deployment or infrastructure-provisioning scope. Addresses issues: No Dockerfile found.",
+      "dockerfilePath": "Dockerfile (to be created)",
+      "kbId": "containerization-copilot-agent",
+      "dependencies": [
+        "002-transform-jakarta-jpa-to-azure"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "plan-20261027170734",
+    "projectName": "demo",
+    "language": "java",
+    "createdAt": "2026-10-27T17:09:28.447+03:00",
+    "version": "1.0"
+  }
+}

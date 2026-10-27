@@ -39,5 +39,11 @@ public class CartController {
         return cartService.removeItemFromCart(cartId, productId);
     }
 
+    @PostMapping("/{cartId}/checkout")
+    public Cart checkoutCart(@PathVariable Long cartId) {
+        return cartService.checkoutCart(cartId);
+    }
+    
+
 
 }
