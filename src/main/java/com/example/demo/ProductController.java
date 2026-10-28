@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.example.demo.dto.ProductDto;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
+
 
 @RestController 
 @RequestMapping ("/api/products")
@@ -19,12 +23,12 @@ private final ProductService productService;
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
+    public ProductDto createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
     }
 
     @GetMapping("/{id}")    
-    public Product getProductById(@PathVariable Long id) {
+    public ProductDto getProductById(@PathVariable Long id) {
         return productService.getProductById(id);    
     }
 
@@ -34,7 +38,13 @@ private final ProductService productService;
     }
 
     @PatchMapping ("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {  
+    public ProductDto updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {  
         return productService.updateProduct(id, updatedProduct);
     }
+
+    @GetMapping
+    public java.util.List<ProductDto> getAllProducts() {
+        return productService.getAllProducts();
+    }
+    
 }

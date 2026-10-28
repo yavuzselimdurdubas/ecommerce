@@ -2,8 +2,12 @@ package com.example.demo;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.CartDto;
+import com.example.demo.dto.CartItemDto;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import java.util.ArrayList;
+
 
 @Service   
 @RequiredArgsConstructor 
@@ -12,19 +16,24 @@ private final CartRepository cartRepository;
 private final ProductRepository productRepository;
 private final CartItemRepository cartItemRepository;
 
-    public Cart createCart(Cart cart) {
-        return cartRepository.save(cart);
+    public CartDto createCart(Cart cart) {
+        Cart savedCart = cartRepository.save(cart);
+        return convertToDto(savedCart);
     }
 
-    public Cart getCartById(Long id) {
+    public Cart getCartEntity(Long id) {
         if(id == null || id <= 0) {
             throw new IllegalArgumentException("Invalid cart ID: " + id);
         }
         return cartRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Cart not found with id: " + id));
     }
+    
+    public CartDto getCartById(Long id){
+        return convertToDto(getCartEntity(id));
+    }
 
-    public Cart addItemToCart(Long cartId, Long productId, int quantity) {
-        Cart cart = getCartById(cartId);
+    public CartDto addItemToCart(Long cartId, Long productId, int quantity) {
+        Cart cart = getCartEntity(cartId);
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + productId));
     CartItem existingItem = null;
@@ -49,23 +58,23 @@ private final CartItemRepository cartItemRepository;
 
         cart.setTotalPrice(cart.getTotalPrice() + (product.getPrice() * quantity));
         cartRepository.save(cart);
-        return cart;
+        return convertToDto(cart);
     }
 
 
-    public Cart removeItemFromCart(Long cartId, Long productId) {
-        Cart cart = getCartById(cartId);
+    public CartDto removeItemFromCart(Long cartId, Long productId) {
+        Cart cart = getCartEntity(cartId);
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cartId, productId)
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found for product id: " + productId));
         cart.getItems().remove(cartItem);
         cart.setTotalPrice(cart.getTotalPrice() - (cartItem.getProduct().getPrice() * cartItem.getQuantity()));
         cartItemRepository.delete(cartItem);
         cartRepository.save(cart);
-        return cart;
+        return convertToDto(cart);
     }
 
-    public Cart checkoutCart(Long cartId) {
-        Cart cart = getCartById(cartId);
+    public CartDto checkoutCart(Long cartId) {
+        Cart cart = getCartEntity(cartId);
         for (CartItem item : cart.getItems()) {
             Product product = item.getProduct();
             if (product.getStock() < item.getQuantity()) {
@@ -78,7 +87,22 @@ private final CartItemRepository cartItemRepository;
         cart.getItems().clear();
         cart.setTotalPrice(0.0);
         cartRepository.save(cart);
-        return cart;
+        return convertToDto(cart);
     }
     
+    private CartDto convertToDto(Cart cart) {
+        CartDto cartDto = new CartDto();
+        cartDto.setId(cart.getId());
+        cartDto.setTotalPrice(cart.getTotalPrice());   
+        List<CartItemDto> itemDtos = new ArrayList<>();
+        for (CartItem item : cart.getItems()) {
+            CartItemDto itemDto = new CartItemDto();
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setProductPrice(item.getProduct().getPrice());
+            itemDto.setQuantity(item.getQuantity());
+            itemDtos.add(itemDto);
+        }
+        cartDto.setItems(itemDtos);
+        return cartDto;
+    }
 }
