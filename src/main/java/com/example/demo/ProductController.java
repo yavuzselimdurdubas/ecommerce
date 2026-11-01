@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.example.demo.dto.ProductDto;
-import org.springframework.web.bind.annotation.RequestParam;
-import java.util.List;
 
 
 @RestController 
